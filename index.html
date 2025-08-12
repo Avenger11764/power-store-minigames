@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Power Store Arcade</title>
+    <!-- 1. The required Telegram Web App script -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background-color: #1a1a1a; /* A dark background */
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            text-align: center;
+        }
+        #game-frame {
+            flex-grow: 1; /* The iframe will take up most of the space */
+            border: none;
+            width: 100%;
+            background-color: #000;
+        }
+        #controls {
+            padding: 12px;
+            background-color: #2c2c2e;
+            border-top: 1px solid #444;
+            flex-shrink: 0;
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 10px;
+            border: none;
+            background-color: #007aff;
+            color: white;
+            transition: background-color 0.2s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        p {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 2. The iframe that will load the external game -->
+    <iframe id="game-frame" src=""></iframe>
+
+    <!-- 3. Your own controls that can talk to the bot -->
+    <div id="controls">
+        <p>Finished playing? Claim your reward!</p>
+        <button onclick="claimReward()">🎁 Claim 10 Coins</button>
+    </div>
+
+    <script>
+        // 4. A map of game identifiers to their full URLs
+        const gameUrls = {
+            'om-nom-run': 'https://play.famobi.com/om-nom-run',
+            'cannon-balls-3d': 'https://play.famobi.com/cannon-balls-3d',
+            'tower-crash-3d': 'https://play.famobi.com/tower-crash-3d',
+            '3d-free-kick': 'https://play.famobi.com/3d-free-kick',
+            'totemia-cursed-marbles': 'https://play.famobi.com/totemia-cursed-marbles',
+            'moto-x3m': 'https://play.famobi.com/moto-x3m'
+        };
+
+        // 5. This code runs when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get the game identifier from the URL (e.g., ?game=om-nom-run)
+            const params = new URLSearchParams(window.location.search);
+            const gameId = params.get('game');
+
+            const gameFrame = document.getElementById('game-frame');
+            
+            // Find the correct URL from our map
+            const gameUrl = gameUrls[gameId];
+
+            if (gameUrl) {
+                // If we found a valid game, set it as the source for the iframe
+                gameFrame.src = gameUrl;
+            } else {
+                // If the gameId is invalid, show an error
+                document.body.innerHTML = '<p>Error: Game not found.</p>';
+            }
+        });
+
+        // 6. The JavaScript function that sends data to your bot
+        function claimReward() {
+            const tg = window.Telegram.WebApp;
+            const params = new URLSearchParams(window.location.search);
+            const gameId = params.get('game');
+            
+            // The data we will send back.
+            const dataToSend = {
+                game: gameId || 'unknown_game', // Send back the ID of the game played
+                action: 'claimed_reward',
+                reward: 10 // The fixed reward amount
+            };
+
+            // Send the data string to your Python bot and close the window
+            tg.sendData(JSON.stringify(dataToSend));
+            tg.close();
+        }
+    </script>
+
+</body>
+</html>
