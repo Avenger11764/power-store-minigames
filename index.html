@@ -71,10 +71,14 @@
             'tower-crash-3d': 'https://play.famobi.com/tower-crash-3d',
             '3d-free-kick': 'https://play.famobi.com/3d-free-kick',
             'totemia-cursed-marbles': 'https://play.famobi.com/totemia-cursed-marbles',
-            'moto-x3m': 'https://play.famobi.com/moto-x3m'
+            'moto-x3m-pool-party': 'https://play.famobi.com/moto-x3m-pool-party',
+            'rise-up': 'https://play.famobi.com/rise-up',
+            'neon-tower': 'https://play.famobi.com/neon-tower',
+            'brain-trainer': 'https://play.famobi.com/brain-trainer',
+            'color-shape': 'https://play.famobi.com/color-shape'
         };
 
-        // NEW: Variable to store the time when the game started
+        // Variable to store the time when the game started
         let startTime = Date.now();
 
         // This code runs when the page loads
@@ -97,15 +101,15 @@
             const params = new URLSearchParams(window.location.search);
             const gameId = params.get('game');
             
-            // NEW: Calculate how many seconds the user played
+            // Calculate how many seconds the user played
             const endTime = Date.now();
             const secondsPlayed = Math.round((endTime - startTime) / 1000);
 
             // The data we will send back.
             const dataToSend = {
                 game: gameId || 'unknown_game',
-                action: 'claim_time_reward', // NEW action name
-                duration: secondsPlayed      // NEW: Send the duration
+                action: 'claim_time_reward', // Use the new action name
+                duration: secondsPlayed      // Send the duration
             };
 
             // Send the data string to your Python bot and close the window
