@@ -54,17 +54,17 @@
 </head>
 <body>
 
-    <!-- 2. The iframe that will load the external game -->
+    <!-- The iframe that will load the external game -->
     <iframe id="game-frame" src=""></iframe>
 
-    <!-- 3. Your own controls that can talk to the bot -->
+    <!-- Your own controls that can talk to the bot -->
     <div id="controls">
         <p>Finished playing? Claim your reward!</p>
-        <button onclick="claimReward()">🎁 Claim 10 Coins</button>
+        <button onclick="claimReward()">🎁 Claim Reward</button>
     </div>
 
     <script>
-        // 4. A map of game identifiers to their full URLs
+        // A map of game identifiers to their full URLs
         const gameUrls = {
             'om-nom-run': 'https://play.famobi.com/om-nom-run',
             'cannon-balls-3d': 'https://play.famobi.com/cannon-balls-3d',
@@ -74,37 +74,38 @@
             'moto-x3m': 'https://play.famobi.com/moto-x3m'
         };
 
-        // 5. This code runs when the page loads
+        // NEW: Variable to store the time when the game started
+        let startTime = Date.now();
+
+        // This code runs when the page loads
         document.addEventListener('DOMContentLoaded', () => {
-            // Get the game identifier from the URL (e.g., ?game=om-nom-run)
             const params = new URLSearchParams(window.location.search);
             const gameId = params.get('game');
-
             const gameFrame = document.getElementById('game-frame');
-            
-            // Find the correct URL from our map
             const gameUrl = gameUrls[gameId];
 
             if (gameUrl) {
-                // If we found a valid game, set it as the source for the iframe
                 gameFrame.src = gameUrl;
             } else {
-                // If the gameId is invalid, show an error
                 document.body.innerHTML = '<p>Error: Game not found.</p>';
             }
         });
 
-        // 6. The JavaScript function that sends data to your bot
+        // The JavaScript function that sends data to your bot
         function claimReward() {
             const tg = window.Telegram.WebApp;
             const params = new URLSearchParams(window.location.search);
             const gameId = params.get('game');
             
+            // NEW: Calculate how many seconds the user played
+            const endTime = Date.now();
+            const secondsPlayed = Math.round((endTime - startTime) / 1000);
+
             // The data we will send back.
             const dataToSend = {
-                game: gameId || 'unknown_game', // Send back the ID of the game played
-                action: 'claimed_reward',
-                reward: 10 // The fixed reward amount
+                game: gameId || 'unknown_game',
+                action: 'claim_time_reward', // NEW action name
+                duration: secondsPlayed      // NEW: Send the duration
             };
 
             // Send the data string to your Python bot and close the window
